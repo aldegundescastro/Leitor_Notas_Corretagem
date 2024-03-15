@@ -49,7 +49,5 @@ def Read_File (file_name) :
 
 
 
-
-   
-        
-Get_File_Name()
+if __name__ == "__main__":
+   Get_File_Name()
