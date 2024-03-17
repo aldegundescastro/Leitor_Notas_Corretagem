@@ -1,6 +1,6 @@
-# Leitura de Notas de Corretagem
+# Leitor de Notas de Corretagem
 
-Leitura, tratamento e processamento de notas de corretam PDF 
+Conversor de PDF (SINOCAR) para Planilha (xlsx). Leitura, tratamento e processamento de Notas de Corretagem.
 
 - [x] ModalMais
 - [ ] XP
@@ -9,15 +9,15 @@ Leitura, tratamento e processamento de notas de corretam PDF
 - [ ] Genial
 
 
-Insira as notas de corretagem na pasta "notas" e rode o arquivo "main". 
+Insira suas notas de corretagem na pasta "notas", rode o arquivo "main.py". 
 O arquivo "notas.xlsx" será gerado. 
 
 
 
 
-*obs: Projeto em desenvolvimento, Planilha atual apresenta todos os valores positivos, conforme consta na nota de corretagem, sendo necessário observar manualmente a coluna "IRRF Day Trade (proj.)" para definir se "Total líquido da nota" é um valor positovo ou negativo. 
+*obs: Projeto em desenvolvimento, Planilha atual apresenta todos os valores positivos, conforme consta na nota de corretagem, sendo necessário observar manualmente a coluna "IRRF Day Trade (proj.)" para definir se "Total líquido da nota" é um valor positivo ou negativo. 
 
-Futuro:
+Futuro :
 - [ ] Planilha Final
 - [ ] Separação de Ativos (WIN e WDO)
-- [ ] Software Executavel 
+- [ ] Software Executável 
