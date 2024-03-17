@@ -5,49 +5,95 @@ import PyPDF2
 import re
 
 
-"""""
-Objetivo: Leitura, tratamento e processamento de notas de corretam PDF (SINOCAR)
-"""""
 
-def Get_File_Name ():
-    files = sorted(glob(r'./notas/*.pdf'))
-    for file in files:
-        print(file)
-        Read_File(file)
+def Read_File () :
+    # Criar dataframes
+    head = ['Data','Venda disponível','Compra disponível','Venda Opções','Compra Opções','Valor dos negócios',
+            'IRRF','IRRF Day Trade (proj.)','Taxa operacional','Taxa registro BM&F','Taxas BM&F (emol+f.gar)',
+            'NAN','+Outros Custos','Impostos','Ajuste de posição','Ajuste day trade','Total de custos operacionais',
+            'Outros','IRRF operacional','Total Conta Investimento','Total Conta Normal','Total liquido (#)','Total líquido da nota']
+    df = pd.DataFrame(columns = head)
+    df_page = pd.DataFrame(columns = head)
+    df_file = pd.DataFrame(columns = head)
+    df_files = pd.DataFrame(columns = head) 
+    
+    try:
+        # Obter lista com nome dos arquivos    
+        files = sorted(glob(r'./notas/*.pdf'))
+        for file_name in files:
+            print(file_name)
+            with open(file_name, "rb") as file:
+                reader = PyPDF2.PdfReader(file)
+                num_pages = len(reader.pages)
 
+                # Iterar sobre cada página do PDF
+                for page_num in range(num_pages):
+                    page = reader.pages[page_num]
+                    text = str(page.extract_text())
+                    #print(text)
 
-def Read_File (file_name) : 
-    try:    
-        with open(file_name, "rb") as file:
-            reader = PyPDF2.PdfReader(file)
-            num_pages = len(reader.pages)
+                    texto_alvo = 'Data pregão'
+                    if texto_alvo in text:                              
+                        #print(texto_alvo)
+                        index = text.index(texto_alvo) 
+                        linha = text[index:].split('\n')[1]
+                        df[df.columns[0]] = [linha]
+                        #print(linha) 
 
-            # Inicializar listas para armazenar os dados extraídos
-            datas = []
-            valores = []
-            
-            # Iterar sobre cada página do PDF
-            for page_num in range(1):
-                page = reader.pages[page_num]
-                text = page.extract_text()
-                print(text)
-                # Procurar por padrões de data e valor usando expressões regulares
-                pattern_data = r'\d{2}/\d{2}/\d{4}'
-                pattern_valor = r'R\$\s*\d[\d\.,]*\d'
-                matches_data = re.findall(pattern_data, text)
-                matches_valor = re.findall(pattern_valor, text)
-                
-                # Adicionar as correspondências à lista de dados
-                datas.extend(matches_data)
-                valores.extend(matches_valor)
-        # Criar DataFrame com os dados extraídos
-        df = pd.DataFrame({'Data': datas, 'Total líquido da nota': valores})
-        print(df)
+                    texto_alvo = 'Valor dos negócios'
+                    if texto_alvo in text:
+                        #print(texto_alvo)
+                        index = text.index(texto_alvo)
+                        for i in range(1,6):
+                            linha = text[index:].split('\n')[i][:4]
+                            df[df.columns[i]] = [linha]
+                            #print(linha)      
+                    
+                    texto_alvo = 'Taxas BM&F (emol+f.gar)'
+                    if texto_alvo in text:
+                        #print(texto_alvo)
+                        index = text.index(texto_alvo)
+                        for i in range(5):
+                            linha = text[index:].split('\n')[i+1][:4]
+                            df[df.columns[6+i]] = [linha]
+                            #print(linha)    
+                        
+                    texto_alvo = 'Total de custos operacionais'
+                    if texto_alvo in text:
+                        #print(texto_alvo)
+                        index = text.index(texto_alvo)
+                        for i in range(6):
+                            linha = text[index:].split('\n')[i+1][:4]
+                            df[df.columns[11+i]] = [linha]
+                            #print(linha)
+
+                    texto_alvo = 'Total líquido da nota'
+                    if texto_alvo in text:
+                        #print(texto_alvo)
+                        index = text.index(texto_alvo)
+                        for i in range(6):
+                            linha = text[index:].split('\n')[i+1][:4]
+                            df[df.columns[17 + i]] = [linha]
+                            #print(linha)  
+
+                    df_page = pd.concat([df_page,df],ignore_index=True)
+        
+        df_page.drop(columns=['NAN'],inplace=True)
+        #df.loc[:, df.columns != 'Data'] = df.loc[:, df.columns != 'Data'].apply(lambda x: x.str.replace(',', '.')).astype(float)
+        #df_page.loc[df_page['IRRF Day Trade (proj.)'] < 0.01, 'Total líquido da nota'] *= -1
+        print("Arquivos lidos com sucesso !")
+        sheet_name = 'notas.xlsx'
+        df_new = df_page[['Valor dos negócios','IRRF Day Trade (proj.)', 'Total de custos operacionais','Total líquido da nota']]
+        
+        # Criando um writer para o arquivo Excel / Salvar datarame planilha  
+        with pd.ExcelWriter(sheet_name) as writer:
+            df_page.to_excel(writer, sheet_name='Sheet', index=False)
+            df_new.to_excel(writer, sheet_name='Sheet2', index=False)
+            print("Planilha criada com sucesso !")
+
     except Exception as e:
-        print("Erro:",e)    
-
-
+        print("Erro:", e)    
 
 
 if __name__ == "__main__":
-   Get_File_Name()
+   Read_File()
