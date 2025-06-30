@@ -38,8 +38,6 @@ def converter () :
             'Outros','IRRF operacional','Total Conta Investimento','Total Conta Normal','Total liquido (#)','Total líquido da nota']
     df = pd.DataFrame(columns = head)
     df_page = pd.DataFrame(columns = head)
-    df_file = pd.DataFrame(columns = head)
-    df_files = pd.DataFrame(columns = head) 
     
     try:
         # Obter lista com nome dos arquivos    

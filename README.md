@@ -15,7 +15,7 @@ O arquivo "notas.xlsx" será gerado.
 
 
 
-*obs: Projeto em desenvolvimento. 
+*obs: Projeto em desenvolvimento, sujeito a falhas não observadas. CONFIRA O RESULTADO LÍQUIDO DA NOTA ! 
 
 Futuro :
 - [ ] Separação de Ativos (WIN e WDO)
